@@ -18,7 +18,7 @@ app.use(cors({
 }));
 
 app.get("/", (req, res) => {
-  res.send("API de comentarios funcionando ✅");
+  res.send("API de comentarios funcionando");
 });
 
 // Ruta de prueba para verificar la conexión a la base de datos
@@ -26,9 +26,9 @@ app.get("/api/test-db", async (req, res) => {
   try {
     const connection = await db.getConnection();
     connection.release();
-    res.send("Conexión a MySQL funcionando correctamente ✔️");
+    res.send("Conexión a MySQL funcionando correctamente");
   } catch (error) {
-    res.status(500).send("Error al conectar a MySQL ❌: " + error.message);
+    res.status(500).send("Error al conectar a MySQL: " + error.message);
   }
 });
 
