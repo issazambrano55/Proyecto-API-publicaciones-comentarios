@@ -1,11 +1,20 @@
+import { internalError, sendResponse } from "../utils/utils.js";
+
 export const errorHandler = (err, req, res, next) => {
-  console.error("ERROR:", err);
+  console.error("Error no controlado:", err);
 
-  const status = err.status || 500;
+  if (res.headersSent) {
+    return next(err);
+  }
 
-  return res.status(status).json({
-    success: false,
-    message: err.message || "Error interno del servidor",
-    errors: err.errors || null
+
+  if (err.status && typeof err.success !== "undefined") {
+    return res.status(err.status).json(err);
+  }
+
+  const resp = internalError("Error interno del servidor", {
+    mensaje: err.message
   });
+
+  return sendResponse(res, resp);
 };
