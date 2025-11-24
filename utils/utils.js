@@ -8,7 +8,7 @@ export const HTTP_CODES = Object.freeze({
   ACCEPTED: 202,
   NO_CONTENT: 204,
 
-  //  Errores del cliente
+  
 
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
@@ -21,7 +21,7 @@ export const HTTP_CODES = Object.freeze({
   UNPROCESSABLE_ENTITY: 422,
   TOO_MANY_REQUESTS: 429,
 
-  // – Errores del servidor
+ 
 
   INTERNAL_ERROR: 500,
   NOT_IMPLEMENTED: 501,

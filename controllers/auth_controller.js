@@ -16,17 +16,15 @@ import {
   sendResponse
 } from "../utils/utils.js";
 
-// =========================
-//       REGISTER
-// =========================
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, telefono, about } = req.body;
 
-    // Normalizar email
+   
     const normalizedEmail = email?.toLowerCase().trim();
 
-    // Validación mínima
+   
     if (!name || !normalizedEmail || !password) {
       return sendResponse(
         res,
@@ -34,7 +32,7 @@ export const register = async (req, res, next) => {
       );
     }
 
-    // Buscar si correo ya existe
+    
     const existingUser = await getUserByEmail(normalizedEmail);
     if (existingUser) {
       return sendResponse(
@@ -43,7 +41,7 @@ export const register = async (req, res, next) => {
       );
     }
 
-    // Buscar si el nombre ya existe
+    
     const existingName = await getUserByName(name);
     if (existingName) {
       return sendResponse(
@@ -52,12 +50,12 @@ export const register = async (req, res, next) => {
       );
     }
 
-    // Hashear contraseña con Argon2
+   
     const password_hash = await argon2.hash(password, {
       type: argon2.argon2id
     });
 
-    // Crear usuario (id autoincremental)
+    
     const newUserId = await createUser({
       name,
       email: normalizedEmail,
@@ -86,14 +84,12 @@ export const register = async (req, res, next) => {
   }
 };
 
-// =========================
-//          LOGIN
-// =========================
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Validación simple
+    
     if (!email || !password) {
       return sendResponse(
         res,
@@ -103,7 +99,7 @@ export const login = async (req, res, next) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Buscar usuario por email
+   
     const user = await getUserByEmail(normalizedEmail);
     if (!user) {
       return sendResponse(
@@ -112,7 +108,7 @@ export const login = async (req, res, next) => {
       );
     }
 
-    // Verificar contraseña con Argon2
+ 
     const match = await argon2.verify(user.password_hash, password);
     if (!match) {
       return sendResponse(
@@ -121,7 +117,7 @@ export const login = async (req, res, next) => {
       );
     }
 
-    // Firmar token JWT
+    
     const token = jwt.sign(
       {
         id: user.id,
@@ -132,7 +128,7 @@ export const login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
 
-    // Enviar token en header y en body
+    
     res.setHeader("Authorization", `Bearer ${token}`);
 
     const resp = ok("Inicio de sesión exitoso", { token });

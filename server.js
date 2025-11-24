@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
   res.send("API de comentarios funcionando");
 });
 
-// Ruta de prueba para verificar la conexión a la base de datos
+
 app.get("/api/test-db", async (req, res) => {
   try {
     const connection = await db.getConnection();
