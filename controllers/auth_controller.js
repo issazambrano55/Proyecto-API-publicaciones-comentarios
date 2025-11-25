@@ -16,21 +16,34 @@ import {
   sendResponse
 } from "../utils/utils.js";
 
+import {
+  registerSchema,
+  validateLogin
+} from "../schemas/validators_user.js";
+
 
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, telefono, about } = req.body;
+    
+    const result = registerSchema.safeParse(req.body);
 
-   
-    const normalizedEmail = email?.toLowerCase().trim();
+    if (!result.success) {
+      const errores = result.error.errors.map(e => ({
+        campo: e.path.join("."),
+        mensaje: e.message
+      }));
 
-   
-    if (!name || !normalizedEmail || !password) {
       return sendResponse(
         res,
-        badRequest("Faltan campos obligatorios (name, email, password)")
+        badRequest("Error de validación", errores)
       );
     }
+
+    
+    const { name, email, password, telefono, about } = result.data;
+
+    
+    const normalizedEmail = email.toLowerCase().trim();
 
     
     const existingUser = await getUserByEmail(normalizedEmail);
@@ -50,7 +63,7 @@ export const register = async (req, res, next) => {
       );
     }
 
-   
+    
     const password_hash = await argon2.hash(password, {
       type: argon2.argon2id
     });
@@ -73,13 +86,6 @@ export const register = async (req, res, next) => {
     return sendResponse(res, resp);
 
   } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
-      return sendResponse(
-        res,
-        badRequest("El correo electrónico o nombre ya está en uso")
-      );
-    }
-
     next(error);
   }
 };
@@ -87,19 +93,25 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const result = validateLogin.safeParse(req.body);
 
-    
-    if (!email || !password) {
+    if (!result.success) {
+      const errores = result.error.errors.map(e => ({
+        campo: e.path.join("."),
+        mensaje: e.message
+      }));
+
       return sendResponse(
         res,
-        badRequest("Email y password son obligatorios")
+        badRequest("Error de validación", errores)
       );
     }
 
+    const { email, password } = result.data;
+
     const normalizedEmail = email.toLowerCase().trim();
 
-   
+    
     const user = await getUserByEmail(normalizedEmail);
     if (!user) {
       return sendResponse(
@@ -108,9 +120,9 @@ export const login = async (req, res, next) => {
       );
     }
 
- 
-    const match = await argon2.verify(user.password_hash, password);
-    if (!match) {
+    
+    const validPassword = await argon2.verify(user.password_hash, password);
+    if (!validPassword) {
       return sendResponse(
         res,
         unauthorized("Credenciales inválidas")
@@ -125,13 +137,16 @@ export const login = async (req, res, next) => {
         email: user.email
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      {
+        expiresIn: "1h"
+      }
     );
 
     
-    res.setHeader("Authorization", `Bearer ${token}`);
+    res.setHeader("Authorization",` Bearer ${token}`);
 
     const resp = ok("Inicio de sesión exitoso", { token });
+
     return sendResponse(res, resp);
 
   } catch (error) {
