@@ -143,7 +143,7 @@ export const login = async (req, res, next) => {
     );
 
     
-    res.setHeader("Authorization",` Bearer ${token}`);
+    res.setHeader("Authorization",`Bearer ${token}`);
 
     const resp = ok("Inicio de sesión exitoso", { token });
 
