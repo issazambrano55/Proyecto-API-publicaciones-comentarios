@@ -1,24 +1,12 @@
-import {
-  obtenerPublicaciones,
-  obtenerPublicacionPorId,
-  crearPublicacion,
-  actualizarPublicacion,
-  eliminarPublicacionYComentarios,
-  obtenerPublicacionConAutor,
-  obtenerCategorias
+import {obtenerPublicaciones, obtenerPublicacionPorId, crearPublicacion, actualizarPublicacion,
+eliminarPublicacionYComentarios, obtenerPublicacionConAutor, obtenerCategorias
 } from "../models/publicacion_model.js";
 
-import {
-  ok,
-  created,
-  badRequest,
-  notFound,
-  forbidden,
-  unprocessable,
-  sendResponse
+import {ok, created, badRequest, notFound, forbidden, unprocessable, sendResponse
 } from "../utils/utils.js";
 
 import { publicacionSchema } from "../schemas/validators_publicacion.js";
+
 export const listarPublicaciones = async (req, res, next) => {
   try {
     const publicaciones = await obtenerPublicaciones();
@@ -28,6 +16,7 @@ export const listarPublicaciones = async (req, res, next) => {
     next(error);
   }
 };
+
 export const obtenerPublicacion = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -52,6 +41,8 @@ export const obtenerPublicacion = async (req, res, next) => {
     next(error);
   }
 };
+
+
 export const crearPublicacionController = async (req, res, next) => {
   try {
     const parseResult = publicacionSchema.safeParse(req.body);
@@ -94,6 +85,8 @@ export const crearPublicacionController = async (req, res, next) => {
     next(error);
   }
 };
+
+
 export const actualizarPublicacionController = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -150,6 +143,8 @@ export const actualizarPublicacionController = async (req, res, next) => {
     next(error);
   }
 };
+
+
 export const eliminarPublicacionController = async (req, res, next) => {
   try {
     const id = Number(req.params.id);
@@ -190,6 +185,8 @@ export const eliminarPublicacionController = async (req, res, next) => {
     next(error);
   }
 };
+
+
 export const listarCategorias = async (req, res, next) => {
   try {
     const categorias = await obtenerCategorias();
