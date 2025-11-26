@@ -1,4 +1,3 @@
-// middlewares/validarComentarios.js
 import { comentarioSchema } from "../schemas/comentario_schema.js";
 
 export const validarComentarios = (req, res, next) => {
