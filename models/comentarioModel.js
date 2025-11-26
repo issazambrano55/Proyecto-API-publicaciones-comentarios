@@ -30,3 +30,45 @@ export const crearComentario = async ({ content, user_id, post_id }) => {
 };
 
 
+export const getComentarioById = async (id) => {
+  const [rows] = await db.query(
+    `SELECT 
+       c.id,
+       c.content,
+       c.created_at,
+       c.post_id,
+       c.user_id,
+       u.name AS user_name
+     FROM comments c
+     JOIN users u ON c.user_id = u.id
+     WHERE c.id = ?`,
+    [id]
+  );
+
+  return rows[0] || null;
+};
+
+
+
+export const actualizarComentario = async (id, content) => {
+  const [result] = await db.query(
+    `UPDATE comments
+     SET content = ?
+     WHERE id = ?`,
+    [content, id]
+  );
+
+  return result.affectedRows; 
+};
+
+
+
+export const eliminarComentario = async (id) => {
+  const [result] = await db.query(
+    `DELETE FROM comments
+     WHERE id = ?`,
+    [id]
+  );
+
+  return result.affectedRows; 
+};
