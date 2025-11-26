@@ -1,6 +1,6 @@
 import { comentarioSchema } from "../schemas/comentarValidacion.js";
 
-export const validarComentarios = (req, res, next) => {
+export const validarComentarios = (req, res, next) =>{
   const parseResult = comentarioSchema.safeParse(req.body);
 
   if (!parseResult.success) { const errores = parseResult.error.issues.map((e) => ({
