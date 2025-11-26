@@ -4,7 +4,7 @@ import cors from 'cors';
 import db from "./config/db.js";
 import authRoutes from "./routes/auth_routes.js";
 import comentarioRoutes from "./routes/comentario_routes.js";
-import publicacion_routes from "./routes/publicacion_routes.js";
+import publicacionRoutes from "./routes/publicacion_routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 
