@@ -1,4 +1,4 @@
-import { comentarioSchema } from "../schemas/comentario_schema.js";
+import { comentarioSchema } from "../schemas/comentarValidacion.js";
 
 export const validarComentarios = (req, res, next) => {
   const parseResult = comentarioSchema.safeParse(req.body);
