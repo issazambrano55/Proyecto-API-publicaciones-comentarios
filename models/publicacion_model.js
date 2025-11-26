@@ -1,46 +1,35 @@
 import db from "../config/db.js";
+
+
 export const obtenerPublicaciones = async () => {
   const [rows] = await db.query(`
-    SELECT 
-      p.id,
-      p.title,
-      p.content_line1,
-      p.content_line2,
-      p.image,
-      p.created_at,
-      u.name AS autor,
-      c.category_title AS categoria
-    FROM posts p
-    JOIN users u ON p.user_id = u.id
-    LEFT JOIN categories c ON p.category_id = c.id
+    SELECT  p.id, p.title, p.content, p.image, p.created_at, u.name AS autor, c.title AS categoria
+    FROM posts p JOIN users u ON p.user_id = u.id LEFT JOIN categories c ON p.category_id = c.id
     ORDER BY p.created_at DESC
   `);
 
   return rows;
 };
+
+
 export const obtenerPublicacionPorId = async (id) => {
   const [rows] = await db.query(`
-    SELECT 
-      p.id,
-      p.title,
-      p.content_line1,
-      p.content_line2,
-      p.image,
-      p.created_at,
-      u.name AS autor,
-      c.category_title AS categoria
-    FROM posts p
-    JOIN users u ON p.user_id = u.id
+    SELECT p.id, p.title, p.content, p.image, p.created_at, u.name AS autor,
+    c.title AS categoria FROM posts p JOIN users u ON p.user_id = u.id
     LEFT JOIN categories c ON p.category_id = c.id
     WHERE p.id = ?
   `, [id]);
 
-  return rows[0];
+  return rows[0]; 
 };
+
+
 export const crearPublicacion = async (data) => {
-  const { title, content_line1, content_line2, image, category_title, user_id } = data;
+  const { title, content, image, category_title, user_id } = data;
+
+ 
   const [[cat]] = await db.query(
-    "SELECT id FROM categories WHERE category_title = ?", 
+    "SELECT id FROM categories WHERE title = ?", 
     [category_title]
   );
 
@@ -49,12 +38,11 @@ export const crearPublicacion = async (data) => {
   }
 
   const [result] = await db.query(
-    `INSERT INTO posts (title, content_line1, content_line2, image, category_id, user_id)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO posts (title, content, image, category_id, user_id)
+     VALUES (?, ?, ?, ?, ?)`,
     [
       title,
-      content_line1,
-      content_line2 ?? null,
+      content,
       image ?? null,
       cat.id,
       user_id
@@ -63,20 +51,23 @@ export const crearPublicacion = async (data) => {
 
   return result.insertId;
 };
+
+
 export const obtenerPublicacionConAutor = async (id) => {
   const [rows] = await db.query(
     "SELECT user_id FROM posts WHERE id = ?",
     [id]
   );
 
-  return rows[0];
+  return rows[0]; 
 };
-export const actualizarPublicacion = async (id, data) => {
-  const { title, content_line1, content_line2, image, category_title } = data;
 
-  // categoría → id
+
+export const actualizarPublicacion = async (id, data) => {
+  const { title, content, image, category_title } = data;
+
   const [[cat]] = await db.query(
-    "SELECT id FROM categories WHERE category_title = ?", 
+    "SELECT id FROM categories WHERE title = ?", 
     [category_title]
   );
 
@@ -86,23 +77,25 @@ export const actualizarPublicacion = async (id, data) => {
 
   await db.query(
     `UPDATE posts
-     SET title = ?, content_line1 = ?, content_line2 = ?, image = ?, category_id = ?
+     SET title = ?, content = ?, image = ?, category_id = ?
      WHERE id = ?`,
     [
       title,
-      content_line1,
-      content_line2 ?? null,
+      content,
       image ?? null,
       cat.id,
       id
     ]
   );
 };
+
+
 export const eliminarPublicacionYComentarios = async (id) => {
   const conn = await db.getConnection();
 
   try {
     await conn.beginTransaction();
+
     await conn.query("DELETE FROM comments WHERE post_id = ?", [id]);
     const [result] = await conn.query(
       "DELETE FROM posts WHERE id = ?",
@@ -119,15 +112,13 @@ export const eliminarPublicacionYComentarios = async (id) => {
     conn.release();
   }
 };
+
+
 export const obtenerCategorias = async () => {
-  const [rows] = await db.query(`
-    SELECT 
-      id,
-      category_title,
-      category_description
-    FROM categories
-    ORDER BY category_title ASC
-  `);
+  const [rows] = await db.query(
+    `SELECT id, title, description FROM categories ORDER BY title ASC`
+  );
 
   return rows;
 };
+
